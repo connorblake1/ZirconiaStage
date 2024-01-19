@@ -1,30 +1,4 @@
-r"""
-The Poisson equation with Neumann boundary conditions on a part of the
-boundary.
-
-Find :math:`T` such that:
-
-.. math::
-    \int_{\Omega} K_{ij} \nabla_i s \nabla_j p T
-    = \int_{\Gamma_N} s g
-    \;, \quad \forall s \;,
-
-where :math:`g` is the given flux, :math:`g = \ul{n} \cdot K_{ij} \nabla_j
-\bar{T}`, and :math:`K_{ij} = c \delta_{ij}` (an isotropic medium). See the
-tutorial section :ref:`poisson-weak-form-tutorial` for a detailed explanation.
-
-The diffusion velocity and fluxes through various parts of the boundary are
-computed in the :func:`post_process()` function. On 'Gamma_N' (the Neumann
-condition boundary part), the flux/length should correspond to the given value
-:math:`g = -50`, while on 'Gamma_N0' the flux should be zero. Use the
-'refinement_level' option (see the usage examples below) to check the
-convergence of the numerical solution to those values. The total flux and the
-flux through 'Gamma_D' (the Dirichlet condition boundary part) are shown as
-well.
-
-Usage Examples
---------------
-
+"""
 Run with the default settings (no refinement)::
 
   sfepy-run sfepy/examples/diffusion/poisson_neumann.py
@@ -65,64 +39,44 @@ def post_process(out, pb, state, extend=False):
 
     return out
 
-# filename_mesh = data_dir + '/meshes/2d/cross-51-0.34.mesh'
-# import vtk
-# filename = "stage.stl"
-# a = vtk.vtkSTLReader()
-# a.SetFileName(filename)
-# a.Update()
-# a = a.GetOutput()
-# filename = filename.replace('.stl', '.vtk')
-# b = vtk.vtkPolyDataWriter()
-# b.SetFileName(filename)
-# b.SetInputData(a)
-# b.Update()
 # filename_mesh = data_dir + '/meshes/3d/cylinder.mesh'
 filename_mesh = "stage.vtk"
 
 materials = {
-    'flux' : ({'val' : -50.0},),
     'm' : ({'K' : 3.0 * nm.eye(3)},),
 }
 
 regions = {
     'Omega' : 'all',
-    'Gamma_L' : ('vertices in (z > 5.7)', 'facet'),
+    'Gamma_L' : ('vertices in (z > 5.799)', 'facet'),
     'Gamma_R' : ('vertices in (z < 0.001)', 'facet'),
-    # 'Gamma_N' : ('vertices of surface -s (r.Gamma_D +v r.Gamma_N0)',
-    #              'facet'),
 }
-
 fields = {
     'temperature' : ('real', 1, 'Omega', 1),
 }
-
 variables = {
     't' : ('unknown field', 'temperature', 0),
     's' : ('test field',    'temperature', 't'),
 }
-
 ebcs = {
-    't1' : ('Gamma_L', {'t.0' : 750}),
-    't2' : ('Gamma_R',{'t.0' : 350})
+    't1' : ('Gamma_L', {'t.0' : 100}),
+    't2' : ('Gamma_R',{'t.0' : 0})
 }
-
 integrals = {
     'i' : 2
 }
-
 equations = {
     'Temperature' : """
            dw_diffusion.i.Omega(m.K, s, t)
-         = 0"""#dw_integrate.i.Gamma_N(flux.val, s)
+         = 0"""
    # """
 }
 
 solvers = {
     'ls' : ('ls.scipy_direct', {}),
     'newton' : ('nls.newton', {
-        'i_max' : 1,
-        'eps_a' : 1e-10,
+        'i_max' : 3,
+        'eps_a' : 1e-12,
     }),
 }
 

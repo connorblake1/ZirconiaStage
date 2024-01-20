@@ -1,6 +1,6 @@
-import subprocess
-folder_path = r"C:\Users\theco\PycharmProjects\ZirconiaStage"
-script_path = folder_path+"\poisson_neumann.py"
-subprocess.run(['cd', '/D', folder_path], shell=True)
-subprocess.run(['sfepy-run', script_path], cwd=folder_path, shell=True)
-
+file_path = 'OutputLog.txt'
+with open(file_path, 'r') as file:
+    lines = file.readlines()
+lines = [line for line in lines if line.startswith('Comput')]
+with open(file_path, 'w') as file:
+    file.writelines(lines)

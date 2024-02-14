@@ -24,7 +24,7 @@ def post_process(out, pb, state, extend=False):
     return out
 
 # filename_mesh = data_dir + '/meshes/3d/cylinder.mesh'
-filename_mesh = "stage.vtk"
+filename_mesh = "SampleStages2024_02_14_07_27"\"Stage_0.vtk"
 # filename_mesh = 'cylinder.vtk'
 materials = {
     'm' : ({'K' : 3.0 * nm.eye(3)},),
